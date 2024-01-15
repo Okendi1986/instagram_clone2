@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:instagram/navigation.dart';
-import 'package:instagram/screen/home.dart';
+import 'package:instagram/pages/ConnecterPage.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: InstagramHomePage(),
+      home: ConnecterPage(),
       debugShowCheckedModeBanner: false,
     );
   }

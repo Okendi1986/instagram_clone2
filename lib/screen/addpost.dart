@@ -1,24 +1,29 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_toastr/flutter_toastr.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:instagram/screen/home.dart';
 
 class AddPostPage extends StatefulWidget {
-  const AddPostPage({Key? key}) : super(key: key);
+  AddPostPage({Key? key}) : super(key: key);
 
   @override
   _AddPostPageState createState() => _AddPostPageState();
 }
 
 class _AddPostPageState extends State<AddPostPage> {
-  final ImagePicker _picker = ImagePicker();
   File? _image;
 
-  Future<void> _getImage(ImageSource source) async {
-    final pickedFile = await _picker.pickImage(source: source);
-    setState(() {
-      _image = pickedFile != null ? File(pickedFile.path) : null;
-    });
+  Future<void> _pickImage() async {
+    final imagePicker = ImagePicker();
+    final pickedImage = await imagePicker.pickImage(source: ImageSource.gallery);
+
+    if (pickedImage != null) {
+      setState(() {
+        _image = File(pickedImage.path);
+      });
+    }
   }
 
   @override
@@ -26,70 +31,39 @@ class _AddPostPageState extends State<AddPostPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Post'),
-        actions: [
-          TextButton(
-            child: Text(
-              'Share',
-              style: TextStyle(color: Colors.white),
-            ),
-            onPressed: () {},
-          ),
-        ],
       ),
-      body: SingleChildScrollView(
+      body: Center(
         child: Column(
-          children: [
-            SizedBox(height: 16.0),
-            GestureDetector(
-              onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return Container(
-                      height: 150.0,
-                      child: Column(
-                        children: [
-                          ListTile(
-                            leading: Icon(Icons.camera_alt),
-                            title: Text('Take a photo'),
-                            onTap: () {
-                              _getImage(ImageSource.camera);
-                              Navigator.pop(context);
-                            },
-                          ),
-                          ListTile(
-                            leading: Icon(Icons.photo_library),
-                            title: Text('Choose from library'),
-                            onTap: () {
-                              _getImage(ImageSource.gallery);
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                );
-              },
-              child: _image == null
-                  ? Container(
-                      height: 200.0,
-                      color: Colors.grey[200],
-                      child: Icon(Icons.camera_alt),
-                    )
-                  : Image.file(
-                      _image!,
-                      height: 200.0,
-                      fit: BoxFit.cover,
-                    ),
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            _image != null
+                ? Image.file(
+                    _image!,
+                    height: 100.0,
+                  )
+                : Placeholder(
+                    fallbackHeight: 100.0,
+                    fallbackWidth: double.infinity,
+                  ),
+            ElevatedButton(
+              onPressed: _pickImage,
+              child: Text('Sélectionner une image'),
             ),
-            SizedBox(height: 16.0),
-            TextField(
-              decoration: InputDecoration(
-                hintText: 'Write a caption...',
-                border: OutlineInputBorder(),
-              ),
-              maxLines: null,
+            ElevatedButton(
+              onPressed: () {
+                if (_image != null) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => HomePage(image: _image),
+                    ),
+                  );
+                } else {
+                  FlutterToastr.show('Inscription reussir', context);
+                  // Gérer le cas où aucune image n'a été sélectionnée
+                }
+              },
+              child: Text('Publier'),
             ),
           ],
         ),

@@ -1,28 +1,83 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+
+import 'package:instagram/pages/ArtistesPage.dart';
+import 'package:instagram/pages/ConnecterPage.dart';
+import 'package:instagram/pages/ExpositionPage.dart';
+import 'package:instagram/pages/GaleriePage.dart';
+import 'package:instagram/pages/InscriptionPage.dart';
+import 'package:instagram/screen/addpost.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+  final File? image;
+
+  HomePage({required this.image});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: Icon(Icons.camera_alt_outlined, color: Colors.black),
-          onPressed: () {},
-        ),
         title: Text(
-          'Instagram',
+          'Communi-Art',
           style: TextStyle(color: Colors.black),
         ),
         actions: [
-          IconButton(
-            icon: Icon(Icons.message_outlined, color: Colors.black),
-            onPressed: () {},
-          ),
+          Theme(
+            data: Theme.of(context).copyWith(
+              dividerColor: Colors.white,
+              iconTheme: const IconThemeData(color: Colors.black),
+              textTheme: const TextTheme().apply(bodyColor: Colors.white),
+            ), 
+            child: PopupMenuButton<int>(
+              icon:  Icon(Icons.menu), 
+              color: Colors.teal,
+              onSelected: (item) => onSelected(context, item),
+              itemBuilder: (context) => [
+                 const PopupMenuItem<int>(
+                    value: 0,
+                    child: Text('Artistes'),
+                  ),
+                  const PopupMenuItem<int>(
+                    value: 1,
+                    child: Text('Galerie'),
+                  ),
+                  PopupMenuDivider(),
+                  const PopupMenuItem<int>(
+                    value: 2,
+                    child: Row(
+                      children: [
+                        SizedBox(width: 8),
+                        Text('Categorie'),
+                      ],
+                    ),
+                  ),
+                    const PopupMenuItem<int>(
+                    value: 3,
+                    child: Row(
+                      children: [
+                        SizedBox(width: 8),
+                        Text('Devenir-Menbre'),
+                      ],
+                    ),
+                  ),
+                    const PopupMenuItem<int>(
+                    value: 4,
+                    child: Row(
+                      children: [
+                        SizedBox(width: 8),
+                        Text('Connecter'),
+                      ],
+                    ),
+                  ),
+              ]
+            )
+            )
+          //IconButton(
+            //icon: Icon(Icons.menu, color: Colors.black),
+            //onPressed: () {},
+          //),
         ],
       ),
       body: ListView(
@@ -30,20 +85,32 @@ class HomePage extends StatelessWidget {
           Container(
             height: 120.0,
             padding: EdgeInsets.symmetric(horizontal: 10.0),
-            child: ListView(
-              scrollDirection: Axis.horizontal,
+            child: Column(
               children: [
-                SizedBox(width: 10.0),
-                _StoryButton(),
-                _buildStory('images/h1.jpg', 'User 1'),
-                _buildStory('images/h2.jpg', 'User 2'),
-                _buildStory('images/h3.jpg', 'User 3'),
-                _buildStory('images/h4.jpg', 'User 4'),
-                _buildStory('images/h5.jpg', 'User 5'),
-                _buildStory('images/h6.jpg', 'User 6'),
+                Container(
+                  height: 50,
+                  child: Card(
+                    color: Colors.black38,
+                    elevation: 3,
+                    margin: EdgeInsets.symmetric(horizontal: 30),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        labelText: "Recherche",
+                        labelStyle: TextStyle(
+                          color: Colors.white38
+                        ),
+                        suffixIcon: Icon(Icons.search),
+                        contentPadding: EdgeInsets.only(left: 20),
+                      ),
+                    ),
+                  ),
+                )
               ],
             ),
           ),
+          AddPostPage(),
           Divider(),
           _Post(
             username: 'johndoe',
@@ -64,8 +131,40 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
+  void onSelected(BuildContext context, int item) {
+    switch (item) {
+      case 0:
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => ArtistesPage()),
+        );
+        break;
+      case 1:
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => GaleriePage(theme: '', artist: '',)),
+        );
+        break;
+      case 2:
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => CategoriePage()),
+          (route) => true,
+        );
+        break;
+      case 3:
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => InscriptionPage()),
+          (route) => true,
+        );
+        break;
+      case 4:
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => ConnecterPage()),
+          (route) => true,
+        );
+    }
+  }
 }
 
+// ignore: unused_element
 class _StoryButton extends StatelessWidget {
   const _StoryButton({Key? key}) : super(key: key);
 
@@ -87,6 +186,7 @@ class _StoryButton extends StatelessWidget {
   }
 }
 
+// ignore: unused_element
 Widget _buildStory(String image, String name) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 8.0),

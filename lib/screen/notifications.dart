@@ -1,88 +1,108 @@
 import 'package:flutter/material.dart';
+import 'package:instagram/Image%20page/reseauArt.dart';
 
-import 'package:flutter/material.dart';
-
-class NotificationsPage extends StatelessWidget {
+class NotificationsPage extends StatefulWidget {
   const NotificationsPage({Key? key}) : super(key: key);
+  
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text(
-          'Notifications',
-          style: TextStyle(color: Colors.black),
-        ),
-      ),
-      body: ListView(
-        children: [
-          _Notification(
-            username: 'johndoe',
-            message: 'liked your post.',
-            imageUrl: 'https://picsum.photos/50',
-          ),
-          _Notification(
-            username: 'janedoe',
-            message: 'commented on your post.',
-            imageUrl: 'https://picsum.photos/50',
-          ),
-          _Notification(
-            username: 'jimmy',
-            message: 'started following you.',
-            imageUrl: 'https://picsum.photos/50',
-          ),
-          _Notification(
-            username: 'jack',
-            message: 'mentioned you in a comment.',
-            imageUrl: 'https://picsum.photos/50',
-          ),
-        ],
-      ),
-    );
-  }
+  State<NotificationsPage> createState() => _NotificationsPageState();
+  
 }
 
-class _Notification extends StatelessWidget {
-  final String username;
-  final String message;
-  final String imageUrl;
+class _NotificationsPageState extends State<NotificationsPage> {
+  
+  List <String> allImages = [
+    'images/h1.jpg',
+    'images/Expo.jpg',
+    'images/peinture.jpg',
 
-  const _Notification({
-    Key? key,
-    required this.username,
-    required this.message,
-    required this.imageUrl,
-  }) : super(key: key);
-
+  ];
+  List<String> displayedImages = [];
+ 
   @override
+  void initState() {
+    super.initState();
+    // Au démarrage, afficher toutes les images
+    displayedImages.addAll(allImages);
+  }
+
+  void filterImages(String query) {
+    // Réinitialiser la liste des images affichées
+    setState(() {
+      displayedImages = allImages
+          .where((image) => image.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
+  }
+  
+  @override
+  
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: CircleAvatar(
-        radius: 20.0,
-        backgroundImage: NetworkImage(imageUrl),
-      ),
-      title: RichText(
-        text: TextSpan(
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Catégories'),
+        ),
+        
+        body: Column(
           children: [
-            TextSpan(
-              text: username,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: TextField(
+                onChanged: (value){
+                  filterImages(value);
+                },
+                decoration: InputDecoration(
+                  labelText: 'Recherche',
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
-            TextSpan(
-              text: ' $message',
-              style: TextStyle(color: Colors.grey),
-            ),
+              ),
+              Expanded(
+                child: GridView.builder(
+                  itemCount: displayedImages.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+                  itemBuilder: (BuildContext context, int index){
+                    return GestureDetector(
+                      onTap: (){
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ImageDetailPage(),
+                            ),
+                        );
+                      },
+                      child: Stack(
+                        children: [
+                          Image.asset(displayedImages[index]),
+                          Positioned.fill(
+                            child: Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Container(
+                                color: Colors.black54,
+                                child: Padding(
+                                  padding:EdgeInsets.all(8.0),
+                                  child: Text('Voir+',
+                                    style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),),
+                                  ),
+                              ),
+                            )
+                            )
+                        ],
+                      ),
+                    );
+                    //Image.asset(displayedImages[index]);
+                  }
+                  )
+                )
           ],
         ),
       ),
-      trailing: IconButton(
-        icon: Icon(Icons.more_horiz),
-        onPressed: () {},
-      ),
     );
   }
-}
+  }
+

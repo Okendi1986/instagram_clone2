@@ -1,46 +1,97 @@
 import 'package:flutter/material.dart';
+import 'package:instagram/Image%20page/ImageDetailsScreen.dart';
+//import 'package:instagram/Image%20page/reseauArt.dart';
+// Modèle d'une image avec sa description
+class ImageInfo {
+  final String imagePath;
+  final String description;
 
-import 'package:flutter/material.dart';
+  ImageInfo(this.imagePath, this.description);
+}
 
-class ExplorePage extends StatelessWidget {
-  const ExplorePage({Key? key}) : super(key: key);
-
+class ExplorePage extends StatefulWidget {
   @override
+  _ExplorePageState createState() => _ExplorePageState();
+}
+class _ExplorePageState extends State<ExplorePage>{
+  final List<Map<String, dynamic>> imagesData = [
+    {
+      'image': 'images/Expo.jpg',
+      'description': 'Reseaux Artistes',
+    },
+    {
+      'image': 'images/galerie.jpg',
+      'description': 'Lieux Exposition',
+    },
+    {
+      'image': 'images/parte.jpg',
+      'description': 'Partenaire Culturels',
+    },
+    // ... Ajoutez les autres images avec leurs descriptions ici
+  ];
+  List<Map<String, dynamic>> filteredImages = [];
+   @override
+  void initState() {
+    super.initState();
+    filteredImages = imagesData;
+  }
+   void filterImages(String query) {
+    List<Map<String, dynamic>> filteredList = [];
+    if (query.isNotEmpty) {
+      filteredList = imagesData
+          .where((image) => image['description']
+              .toLowerCase()
+              .contains(query.toLowerCase()))
+          .toList();
+    } else {
+      filteredList = imagesData;
+    }
+
+    setState(() {
+      filteredImages = filteredList;
+    });
+  }
+  
+   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text(
-          'Explore',
-          style: TextStyle(color: Colors.black),
-        ),
+        title: Text('Explorer'),
         actions: [
-          IconButton(
-            icon: Icon(Icons.search, color: Colors.black),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: Icon(Icons.tune, color: Colors.black),
-            onPressed: () {},
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () {
+                showSearch(
+                  context: context,
+                  delegate: ImageSearch(imagesData, filterImages),
+                );
+              },
+            ),
           ),
         ],
       ),
-      body: GridView.count(
-        crossAxisCount: 3,
-        childAspectRatio: 1.0,
-        mainAxisSpacing: 2.0,
-        crossAxisSpacing: 2.0,
-        children: List.generate(30, (index) {
-          return Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: NetworkImage('https://picsum.photos/201'),
-                fit: BoxFit.cover,
-              ),
-            ),
+      body: ListView.builder(
+        itemCount: filteredImages.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            leading: Image.asset(filteredImages[index]['image']),
+            title: Text(filteredImages[index]['description']),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ImageDetailsScreen(
+                    imageData: filteredImages[index], allImages: [],
+                  ),
+                ),
+              );
+            },
           );
-        }),
+        },
       ),
     );
   }
 }
+

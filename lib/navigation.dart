@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:instagram/screen/addpost.dart';
@@ -14,9 +14,9 @@ class InstagramHomePage extends StatefulWidget {
 
 class _InstagramHomePageState extends State<InstagramHomePage> {
   int _selectedIndex = 0;
+  // Declare and initialize _image as File
 
   final List<Widget> _pages = [
-    HomePage(),
     ExplorePage(),
     AddPostPage(),
     NotificationsPage(),
@@ -38,23 +38,23 @@ class _InstagramHomePageState extends State<InstagramHomePage> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey,
+        unselectedItemColor: Colors.teal,
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search_outlined),
-            label: 'Search',
+            icon: Icon(Icons.event),
+            label: 'Recherche',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add_box_outlined),
-            label: 'Add',
+            label: 'Ajouter',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite_border_outlined),
-            label: 'Notifications',
+            icon: Icon(Icons.menu),
+            label: 'Catégorie',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
